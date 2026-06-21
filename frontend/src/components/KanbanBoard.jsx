@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 // API instance configured for Laravel Backend
@@ -43,13 +43,8 @@ export default function KanbanBoard() {
   // Drag and Drop State
   const [draggedCardId, setDraggedCardId] = useState(null);
 
-  // Load Boards on Mount
-  useEffect(() => {
-    fetchBoards();
-  }, []);
-
   // Fetch all boards
-  const fetchBoards = async () => {
+  async function fetchBoards() {
     setLoading(true);
     try {
       const response = await api.get('/boards');
@@ -68,7 +63,12 @@ export default function KanbanBoard() {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  // Load Boards on Mount
+  useEffect(() => {
+    fetchBoards();
+  }, []);
 
   // Select board and load its columns & cards
   const handleSelectBoard = (board) => {

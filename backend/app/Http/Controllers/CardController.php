@@ -29,6 +29,11 @@ class CardController extends Controller
         return response()->json($card, 201);
     }
 
+    public function show(Card $card)
+    {
+        return response()->json($card);
+    }
+
     public function update(Request $request, Card $card)
     {
         $validated = $request->validate([

@@ -25,6 +25,11 @@ class KanbanListController extends Controller
         return response()->json($list->load('cards'), 201);
     }
 
+    public function show(KanbanList $kanbanList)
+    {
+        return response()->json($kanbanList->load('cards'));
+    }
+
     public function update(Request $request, KanbanList $kanbanList)
     {
         $validated = $request->validate([
