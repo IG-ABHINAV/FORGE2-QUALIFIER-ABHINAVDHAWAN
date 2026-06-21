@@ -9,6 +9,9 @@ COPY . .
 # Copy environment file
 RUN cp .env.example .env
 
+# Install composer dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
 # Generate APP_KEY
 RUN php artisan key:generate
 
@@ -20,7 +23,7 @@ RUN touch database/database.sqlite && \
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 
 # Image config
-ENV SKIP_COMPOSER 0
+ENV SKIP_COMPOSER 1
 ENV WEBROOT /var/www/html/public
 ENV PHP_ERRORS_STDERR 1
 ENV RUN_SCRIPTS 1
