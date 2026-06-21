@@ -1,65 +1,100 @@
 # Forge Kanban Studio
 
-A premium, trello-style collaborative Kanban Board application featuring a Laravel SQLite REST API backend and a Vite React frontend interface.
+A premium, Trello-style collaborative Kanban Board application built autonomously by a two-agent AI system (Hermes + OpenClaw) orchestrated through Slack.
+
+**Live URL**: https://dist-7f3cr1pso-abhinav-dhawans-projects.vercel.app
+
+> **Note**: The frontend is deployed on Vercel. The backend API runs locally (Laravel + SQLite). See run instructions below for full local setup.
+
+---
 
 ## Core Features
-1. **Relational Backend Database**: Designed with Laravel 11 and SQLite database architecture, mapping `Board`, `KanbanList` (columns), and `Card` models.
-2. **Robust Card Attributes**: Supported properties include:
-   - Card Title & Description
-   - Color Labels & Tags (`labels_csv` storage)
-   - Assigned Team Members
-   - Due Date Time Tracking
-   - Custom column placement position index
-3. **Premium Frontend UX Layout**: Designed using custom glassmorphic dark-mode aesthetics:
-   - Dynamic cards sorting and HTML5 drag-and-drop column relocation handlers
-   - Accessibility fallback buttons for quick card moves
-   - Custom tagging filters and instantaneous search queries
-   - Modals for adding, editing, and deleting lists/cards
+1. **Boards → Lists → Cards**: Create boards with multiple lists (To-Do, In Progress, Done). Add cards and move them between lists.
+2. **Card Details**: Each card has a title, description, and inline editing.
+3. **Tags / Labels**: Add colored tags to cards (bug, design, feature, urgent, etc.) with label filtering.
+4. **Assign Members**: Add team members and assign cards to them.
+5. **Due Dates**: Set due dates on cards; overdue cards are visually flagged with red badges.
+6. **Drag & Drop**: Move cards between columns using HTML5 drag-and-drop.
+7. **Glassmorphic Dark Mode UI**: Premium design with backdrop blur, gradients, and smooth animations.
 
 ---
 
-## Technical Stack & Execution Setup
+## Models Used & Routing Rationale
 
-### 1. Backend Server Setup (Laravel API)
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Configure environmental settings:
-   Ensure `.env` exists and contains:
-   ```ini
-   DB_CONNECTION=sqlite
-   ```
-3. Run migrations to initialize the SQLite database structures:
-   ```bash
-   php artisan migrate
-   ```
-4. Launch the local PHP server:
-   ```bash
-   php artisan serve --port=8000
-   ```
-   *API will run at:* `http://127.0.0.1:8000/api`
+| Agent | Model | Why |
+|-------|-------|-----|
+| **Hermes** (Orchestrator / Brain) | Google `gemini-2.5-flash` | Large context window ideal for planning and task decomposition; strong reasoning; generous free tier via AI Studio |
+| **OpenClaw** (Coder / Hands) | Ollama `qwen2.5-coder:7b` | Purpose-built for code generation; runs locally with zero rate limits; fast inference for rapid file writes |
 
-### 2. Frontend client Setup (React + Vite)
-1. Navigate to the frontend directory:
-   ```bash
-   cd ../frontend
-   ```
-2. Install frontend dependencies:
-   ```bash
-   npm install
-   ```
-3. Launch the Vite hot-reloading development server:
-   ```bash
-   npm run dev
-   ```
-   *Vite App will run at:* `http://localhost:5173`
+**Routing strategy**: Stronger model (Gemini) for planning/reasoning, lighter coding-specific model (qwen2.5-coder) for execution — optimizes for speed and reliability with zero cost.
 
 ---
 
-# Agent Execution Logs
+## How to Run Locally
 
-This log records the step-by-step actions performed by OpenClaw and Hermes.
+### 1. Backend (Laravel API)
+```bash
+cd backend
+composer install
+cp .env.example .env        # Ensure DB_CONNECTION=sqlite
+touch database/database.sqlite
+php artisan migrate
+php artisan serve --port=8000
+```
+API runs at: `http://localhost:8000/api`
+
+### 2. Frontend (React + Vite)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+App runs at: `http://localhost:5173`
+
+### 3. Open the app
+Navigate to `http://localhost:5173` in your browser. The board auto-creates on first load.
+
+---
+
+## Agent Setup
+
+### Hermes (Orchestrator)
+- Config: `hermes.config.json`
+- Model: `gemini-2.5-flash` via Google AI Studio
+- Memory: persistent local storage (`.hermes/memory/`)
+- Skill: `skills/status-report/SKILL.md`
+- Autonomous cron: posts progress updates to `#sprint-main`
+
+### OpenClaw (Coder)
+- Config: `openclaw.json`
+- Model: `qwen2.5-coder:7b` via Ollama (local)
+- Workspace: `f:\FORGE 2`
+- Slack integration: Socket Mode
+
+### Slack Channels
+| Channel | Purpose |
+|---------|---------|
+| `#sprint-main` | Human ↔ Hermes. Goals, plans, status updates |
+| `#agent-coder` | Hermes → OpenClaw. Coding tasks and reports |
+| `#agent-orchestrator` | Hermes planning trees and state transitions |
+| `#agent-log` | Raw build logs, test outputs, system status |
+
+---
+
+## Technical Stack
+- **Backend**: Laravel 12 (PHP 8.3), REST API, Eloquent ORM
+- **Database**: SQLite (zero-config)
+- **Frontend**: React 19 (Vite 6), Axios
+- **Styling**: Custom CSS, glassmorphic dark mode
+- **Drag & Drop**: HTML5 native DnD API
+- **Deploy**: Vercel (frontend)
+
+---
+
+## Agent Execution Logs
+
+See [agent-log.md](agent-log.md) for the complete step-by-step build log.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full architecture and agent design.
 
 ---
 
@@ -94,7 +129,7 @@ This log records the step-by-step actions performed by OpenClaw and Hermes.
 ---
 
 ### [2026-06-21 15:51:30] BUILD LOG - BACKEND MIGRATIONS (OpenClaw)
-- **Execution**: `G:\XAMPP\php\php.exe artisan migrate --force`
+- **Execution**: `php artisan migrate --force`
 - **Output**:
   ```
   INFO  Running migrations.
