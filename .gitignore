@@ -19,7 +19,10 @@ TOOLS.md
 USER.md
 openclaw-workspace-state.json
 repost_hermes_thread.js
-repost_massive_logs.js
-repost_massive_logs_v2.js
-repost_massive_logs_v3.js
+repost_massive_logs*.js
+repost_hermes_thread.js
+windup_messages.js
 list_slack.js
+slack.patch.json
+.vite/
+frontend/.vite/
